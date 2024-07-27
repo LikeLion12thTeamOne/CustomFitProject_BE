@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from .models import CustomUser
 
+# 이 단계별로 등록 (과정)
+
+# 1단계) 회원 정보, 약관  >> 여기 코드 추가해야함
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)
 
@@ -26,26 +29,31 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 
+# 2단계) 나이
 class UserAgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['age']
 
+# 3단계) 성별
 class UserGenderSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['gender']
 
+# 4단계) 질병
 class UserDiseaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['disease']
 
+# 5단계) 키
 class UserHeightSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['height']
 
+# 6단계) 몸무게
 class UserWeightSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser

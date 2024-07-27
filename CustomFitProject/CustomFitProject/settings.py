@@ -32,8 +32,11 @@ INSTALLED_APPS = [
     'allauth.account',
     'dj_rest_auth.registration',
 
+    'django.contrib.sessions',
+
     # 생성한 앱 추가
     'accounts',
+    
     
 ]
 

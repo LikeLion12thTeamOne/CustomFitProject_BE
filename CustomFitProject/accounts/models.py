@@ -67,4 +67,4 @@ class CustomUser(AbstractUser):
     weight = models.CharField(max_length=100, choices=WEIGHT_CHOICES, null=True)
 
     def __str__(self):
-        return self.username  # 수정된 부분
+        return self.username  
