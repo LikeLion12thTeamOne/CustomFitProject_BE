@@ -4,7 +4,7 @@ from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Product, CartItem
+from .models import Product, CartItem, RecommendedProduct
 from .serializers import ProductSerializer, CartItemSerializer
 
 # Product 읽기 전용 API view
@@ -132,7 +132,14 @@ class CompareProductsView(APIView):
         else:
             return Response({"error": "알 수 없는 질병 키워드입니다."}, status=status.HTTP_400_BAD_REQUEST)
         
-        best_product = sorted_items[0].product
+        best_product = sorted_items[0].product  # 추천상품
+
+        # 추천 상품 저장
+        RecommendedProduct.objects.create(
+            user=user,
+            product=best_product
+        )
+
         serializer = ProductSerializer(best_product)
 
         user.cart.items.all().delete()  # 비교 완료 후 카트 비우기

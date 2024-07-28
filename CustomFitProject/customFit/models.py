@@ -42,3 +42,20 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.product.product_name}를 {self.cart.user.username}님의 카트에 넣었습니다"
+    
+# 추천상품목록 
+class RecommendedProduct(models.Model):
+    recommendedProduct_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    
+    GNB_CHOICES = [
+        ('G','GOOD'),
+        ('B','BAD'),
+    ]
+
+    GNB = models.CharField(max_length=100, choices=GNB_CHOICES, null=True, blank=True)  # Good or Bad
+    review = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username}의 추천 상품: {self.product.product_name}"
