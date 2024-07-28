@@ -1,5 +1,3 @@
-# customFit/views.py
-
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets, status
@@ -8,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Count  # Count를 명시적으로 가져옴
 from .models import Product, CartItem, RecommendedProduct
-from .serializers import ProductSerializer, CartItemSerializer
+from .serializers import ProductSerializer, CartItemSerializer, RecommendedProductRatingSerializer
 
 # Product 읽기 전용 API view
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
@@ -141,7 +139,7 @@ class CompareProductsView(APIView):
         RecommendedProduct.objects.create(
             user=user,
             product=best_product,
-            disease=disease  # disease 필드 추가
+            disease=disease 
         )
 
         serializer = ProductSerializer(best_product)
@@ -164,3 +162,19 @@ class CompareProductsView(APIView):
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
+    
+
+# 별점 등록 기능을 위한 API 뷰
+class RateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        recommended_product = get_object_or_404(RecommendedProduct, pk=pk, user=request.user)
+        serializer = RecommendedProductRatingSerializer(recommended_product, data=request.data, partial=True)
+    
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+User = get_user_model()

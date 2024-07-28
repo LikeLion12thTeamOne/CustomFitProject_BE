@@ -48,14 +48,27 @@ class RecommendedProduct(models.Model):
     recommendedProduct_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    
+    disease = models.CharField(max_length=100, null=True) # 비교 기준(질병 키워드 추가)
+
     GNB_CHOICES = [
-        ('G','GOOD'),
-        ('B','BAD'),
+        ('G', 'GOOD'),
+        ('B', 'BAD'),
     ]
     GNB = models.CharField(max_length=100, choices=GNB_CHOICES, null=True, blank=True)  # Good or Bad
     review = models.TextField(null=True, blank=True)
-    disease = models.CharField(max_length=100, null=True) # 비교 기준(질병 키워드 추가)
+
+    RATING_CHOICES = [
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+    ]
+    rating = models.IntegerField(choices=RATING_CHOICES, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.user.update_average_rating()
 
     def __str__(self):
         return f"{self.user.username}의 추천 상품: {self.product.product_name}"

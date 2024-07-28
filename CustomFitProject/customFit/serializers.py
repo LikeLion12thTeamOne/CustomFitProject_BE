@@ -23,10 +23,8 @@ class CartItemSerializer(serializers.ModelSerializer):
         model = CartItem
         fields = ['product']
 
-
-# 추천상품 목록 직렬화
-class RecommendedProductSerializer(serializers.ModelSerializer):
+# 맞춤 서비스 별점 (비교하기 기능)
+class RecommendedProductRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecommendedProduct
-        fields = ['recommendedProduct_id', 'user', 'product', 'disease', 'GNB', 'review']  # 필드 추가
-        read_only_fields = ['recommendedProduct_id', 'user', 'product', 'disease']
+        fields = ['rating']

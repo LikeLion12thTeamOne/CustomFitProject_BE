@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 from .views import ProductViewSet, ProductSearchViewSet
 from .views import AddToCartView, CartDetailView, CartItemDeleteView, CartClearView
-from .views import CompareProductsView
+from .views import CompareProductsView, RateView
 
 product_router = SimpleRouter()
 product_router.register('product', ProductViewSet, basename='product')
@@ -22,4 +22,7 @@ urlpatterns = [
 
     # 상품 비교
     path('compare/', CompareProductsView.as_view(), name='compare_products'),
+
+    # 별점 등록 기능
+    path('rate/<int:pk>/', RateView.as_view(), name='rate_recommended_product'),
 ]

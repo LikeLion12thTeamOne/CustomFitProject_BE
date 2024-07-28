@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Avg 
+from customFit.models import RecommendedProduct
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
@@ -65,6 +67,14 @@ class CustomUser(AbstractUser):
     disease = models.CharField(max_length=100, choices=DISEASE_CHOICES, null=True, blank=True)
     height = models.CharField(max_length=100, choices=HEIGHT_CHOICES, null=True)
     weight = models.CharField(max_length=100, choices=WEIGHT_CHOICES, null=True)
+
+    # 별점
+    average_rating = models.FloatField(null=True, blank=True)
+
+    def update_average_rating(self):
+        self.average_rating = RecommendedProduct.objects.filter(user=self).aggregate(Avg('rating'))['rating__avg']
+        self.save()
+
 
     def __str__(self):
         return self.username  

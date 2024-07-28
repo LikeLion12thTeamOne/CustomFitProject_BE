@@ -4,8 +4,8 @@ from customFit.models import RecommendedProduct
 class RecommendedProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecommendedProduct
-        fields = ['recommendedProduct_id', 'user', 'product', 'disease', 'GNB', 'review']  # 필드 추가
-        read_only_fields = ['recommendedProduct_id', 'user', 'product', 'disease']
+        fields = ['recommendedProduct_id', 'user', 'product', 'disease', 'GNB', 'review', 'rating']  # 별점 필드 추가
+        read_only_fields = ['recommendedProduct_id', 'user', 'product', 'disease', 'rating']
 
     def update(self, instance, validated_data):
         validated_data.pop('user', None)
