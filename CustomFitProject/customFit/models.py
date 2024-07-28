@@ -53,9 +53,9 @@ class RecommendedProduct(models.Model):
         ('G','GOOD'),
         ('B','BAD'),
     ]
-
     GNB = models.CharField(max_length=100, choices=GNB_CHOICES, null=True, blank=True)  # Good or Bad
     review = models.TextField(null=True, blank=True)
+    disease = models.CharField(max_length=100, null=True) # 비교 기준(질병 키워드 추가)
 
     def __str__(self):
         return f"{self.user.username}의 추천 상품: {self.product.product_name}"
