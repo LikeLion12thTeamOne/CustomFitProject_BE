@@ -14,4 +14,7 @@ urlpatterns = [
 
     path('auth/', include('rest_framework.urls')),
     path('rest-auth/', include('dj_rest_auth.urls')),
+
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('password/', include('django.contrib.auth.urls')), #비밀번호 수정
 ]

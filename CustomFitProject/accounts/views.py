@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
+#키워드 입력부분 
 from .serializers import (
     UserRegistrationSerializer, UserAgeSerializer, UserGenderSerializer, 
     UserDiseaseSerializer, UserHeightSerializer, UserWeightSerializer
