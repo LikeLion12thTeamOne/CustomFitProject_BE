@@ -1,4 +1,5 @@
 
+import json
 import os
 from pathlib import Path
 from django.core.mail import send_mail #메일인증
@@ -7,7 +8,17 @@ from django.core.mail import send_mail #메일인증
 BASE_DIR = Path(__file__).resolve().parent.parent
 CSV_PATH = os.path.join(BASE_DIR, 'customFit', 'ProductDB.csv')
 
-SECRET_KEY = 'django-insecure-eos4gmk87&u2&!b-qrboz4$cyn3iz9cvm5u($kf@95+&af^(z2'
+secret_file = os.path.join(BASE_DIR, 'secret_key.json')
+
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+def get_secret(setting):
+    return secrets[setting]
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = get_secret("SECRET_KEY")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
