@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Count  # Count를 명시적으로 가져옴
-from .models import Product, CartItem, RecommendedProduct
+from .models import Product, Cart, CartItem, RecommendedProduct
 from .serializers import ProductSerializer, CartItemSerializer, RecommendedProductRatingSerializer
 
 # Product 읽기 전용 API view
@@ -55,7 +55,7 @@ class AddToCartView(APIView):
     def post(self, request, product_id):    # 제품을 카트에 추가
         user = request.user
         product = get_object_or_404(Product, product_id=product_id)
-        cart = user.cart
+        cart = get_object_or_404(Cart, user=user)
 
         if cart.items.count() >= 5:
             return Response({"error": "카트에 담을 수 있는 최대 상품 수는 5개입니다."}, status=status.HTTP_400_BAD_REQUEST)
@@ -72,7 +72,7 @@ class CartDetailView(APIView):
 
     def get(self, request):     # 카트에 담긴 제품 목록을 반환 
         user = request.user
-        cart = user.cart
+        cart = get_object_or_404(Cart, user=user)
         items = cart.items.all()
         serializer = CartItemSerializer(items, many=True)
         return Response(serializer.data)
@@ -85,7 +85,7 @@ class CartItemDeleteView(APIView):
     def delete(self, request, product_id):  # 제품을 카트에서 삭제
         user = request.user
         product = get_object_or_404(Product, product_id=product_id)
-        cart = user.cart
+        cart = get_object_or_404(Cart, user=user)   # 카트가 로그인된 사용자인지 확인 
 
         try:
             cart_item = CartItem.objects.get(cart=cart, product=product)
@@ -100,7 +100,7 @@ class CartClearView(APIView):
 
     def delete(self, request):  # 카트에 있는 모든 제품을 삭제
         user = request.user
-        cart = user.cart
+        cart = get_object_or_404(Cart, user=user)
         cart.items.all().delete()
         return Response({"success": "카트가 비워졌습니다."}, status=status.HTTP_204_NO_CONTENT)
     
@@ -169,7 +169,7 @@ class RateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
-        recommended_product = get_object_or_404(RecommendedProduct, pk=pk, user=request.user)
+        recommended_product = get_object_or_404(RecommendedProduct, pk=pk, user=request.user)   # 로그인된 사용자인지 확인
         serializer = RecommendedProductRatingSerializer(recommended_product, data=request.data, partial=True)
     
         if serializer.is_valid():
