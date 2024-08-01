@@ -98,12 +98,13 @@ class CartItemDeleteView(APIView):
 class CartClearView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request):  # 카트에 있는 모든 제품을 삭제
+    def delete(self, request):
         user = request.user
         cart = get_object_or_404(Cart, user=user)
         cart.items.all().delete()
         return Response({"success": "카트가 비워졌습니다."}, status=status.HTTP_204_NO_CONTENT)
     
+
 
 User = get_user_model() # 현재 활성 사용자 모델 반환/ settings.AUTH_USER_MODEL에 지정된 사용자 모델을 반환
 

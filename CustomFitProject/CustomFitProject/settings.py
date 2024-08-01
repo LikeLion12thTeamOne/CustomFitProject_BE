@@ -49,6 +49,8 @@ INSTALLED_APPS = [
 
     'django_filters',
 
+    'corsheaders',
+
     # 생성한 앱 추가
     'accounts',
     'customFit',
@@ -71,6 +73,7 @@ MIDDLEWARE = [
 
     # 추가
     'allauth.account.middleware.AccountMiddleware', 
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # 추가 
@@ -80,6 +83,34 @@ REST_FRAMEWORK = {
     'rest_framework.authentication.SessionAuthentication', #여기꼭추가
     ],
 }
+
+# CORS 설정
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React 앱이 실행되는 도메인 추가
+]
+
+# 특정 HTTP 메소드만 허용 (필요에 따라 추가/수정)
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+# 특정 헤더만 허용 (필요에 따라 추가/수정)
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
 
 ROOT_URLCONF = 'CustomFitProject.urls'
 
