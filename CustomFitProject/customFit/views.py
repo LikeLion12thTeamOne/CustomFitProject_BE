@@ -140,6 +140,7 @@ class CompareProductsView(APIView):
         RecommendedProduct.objects.create(
             user=user,
             product=best_product,
+            product_name=best_product.product_name,
             disease=disease 
         )
 

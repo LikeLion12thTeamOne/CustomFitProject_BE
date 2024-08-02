@@ -7,8 +7,8 @@ from .models import Notice
 class RecommendedProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecommendedProduct
-        fields = ['recommendedProduct_id', 'user', 'product', 'disease', 'GNB', 'review', 'rating']  # 별점 필드 추가
-        read_only_fields = ['recommendedProduct_id', 'user', 'product', 'disease', 'rating']
+        fields = ['recommendedProduct_id', 'user', 'product','product_name', 'disease', 'GNB', 'review', 'rating']  # 별점 필드 추가
+        read_only_fields = ['recommendedProduct_id', 'user', 'product', 'product_name','disease', 'rating']
 
     def update(self, instance, validated_data):
         validated_data.pop('user', None)

@@ -48,6 +48,7 @@ class RecommendedProduct(models.Model):
     recommendedProduct_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=50, blank=True)
     disease = models.CharField(max_length=100, null=True) # 비교 기준(질병 키워드 추가)
 
     GNB_CHOICES = [
