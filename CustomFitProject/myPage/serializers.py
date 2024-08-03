@@ -54,3 +54,13 @@ class NoticeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notice
         fields = ['title', 'content', 'image']
+
+
+#myPage 회원정보 가져오기 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            'username', 'email', 'first_name', 'age', 'gender', 
+            'disease', 'height', 'weight', 'average_rating'
+        ]

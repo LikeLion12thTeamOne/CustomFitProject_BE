@@ -6,6 +6,7 @@ from accounts.models import CustomUser
 from accounts.serializers import UserAgeSerializer, UserDiseaseSerializer, UserHeightSerializer, UserWeightSerializer
 from .models import Notice
 from .serializers import NoticeListSerializer, NoticeDetailSerializer
+from .serializers import UserProfileSerializer #myPage 회원정보 가져오기
 
 # 추천상품 목록 보기
 class RecommendedProductListView(generics.ListAPIView):
@@ -69,3 +70,12 @@ class NoticeListView(generics.ListAPIView):
 class NoticeDetailView(generics.RetrieveAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeDetailSerializer
+
+
+#myPage 회원정보 가져오기 
+class UserProfileView(generics.RetrieveAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

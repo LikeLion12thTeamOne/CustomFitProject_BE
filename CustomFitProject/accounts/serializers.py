@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from .models import CustomUser
-
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
@@ -32,6 +32,8 @@ class UserWeightSerializer(serializers.ModelSerializer):
         fields = ['weight']
 
 
+CustomUser = get_user_model()
+
 # 회원 가입
 class UserRegistrationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
@@ -44,13 +46,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     terms_accepted_2 = serializers.BooleanField(write_only=True, required=False)  # 두 번째 필수 이용약관 동의 필드
     terms_accepted_optional = serializers.BooleanField(write_only=True, required=False)  # 선택 이용약관 동의 필드
        
-
-    # 아이디와 비밀번호 조건 검사
+    # 아이디 조건 검사
     def validate_username(self, value):
         if len(value) < 4 or len(value) > 16:
             raise serializers.ValidationError('아이디는 4자 이상 16자 이하로 입력해야 합니다.')
+        if CustomUser.objects.filter(username=value).exists():
+            raise serializers.ValidationError('중복된 아이디가 있습니다.')
         return value
 
+    """# 비밀번호 조건 검사
     def validate_password(self, value):
         errors = []
 
@@ -70,31 +74,43 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         if not any(char in '!@#$%^&*()_+-=[]{},.<>?/~`' for char in value):
             errors.append('비밀번호에는 특수문자가 포함되어야 합니다.')
 
-        # 오류가 있으면 모든 오류를 반환
+        # 오류가 있으면 모든 오류를 하나의 문자열로 결합하여 반환 >>  여기 수정함
         if errors:
-            raise serializers.ValidationError({'password': errors})
+            raise serializers.ValidationError(' '.join(errors))
 
+        return value"""
+    
+    # 비밀번호 조건 검사 >> 디자인에 맞춰서 수정함
+    def validate_password(self, value):
+        if len(value) < 8 or not any(char.isdigit() for char in value) or not any(char.isalpha() for char in value) or not any(char in '!@#$%^&*()_+-=[]{},.<>?/~' for char in value):
+            raise serializers.ValidationError('4~16자리 / 영문, 숫자, 특수문자 조합을 충족해 주세요.')
+        return value
+    
+    # 이메일 조건 검사
+    def validate_email(self, value):
+        if CustomUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError('중복된 이메일이 있습니다.')
         return value
    
+
     def validate(self, data):
-        # 전체 동의가 체크된 경우
+        # 약관 조건 검사
         if data.get('terms_accepted', False):
             data['terms_accepted_1'] = True
             data['terms_accepted_2'] = True
             data['terms_accepted_optional'] = True
-        
-        # 필수 동의 체크
-        if not data.get('terms_accepted_1'):
-            raise serializers.ValidationError({'terms_accepted_1': '첫 번째 필수 이용약관에 동의해야 합니다.'})
-        if not data.get('terms_accepted_2'):
-            raise serializers.ValidationError({'terms_accepted_2': '두 번째 필수 이용약관에 동의해야 합니다.'})
-        
+
+        if not data.get('terms_accepted_1') or not data.get('terms_accepted_2'):
+            raise serializers.ValidationError('필수 약관에 동의하지 않을 경우, 회원 가입이 어렵습니다.')
+
         return data
+
     
     def create(self, validated_data):
         if validated_data['password'] != validated_data['password_confirm']:
             raise serializers.ValidationError({'password': '비밀번호와 비밀번호 확인이 일치하지 않습니다. 다시 입력해주세요!'})
 
+        
         user = CustomUser.objects.create_user(
             email=validated_data['email'],
             username=validated_data['username'],

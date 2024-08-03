@@ -4,6 +4,9 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 #키워드 입력부분 
 from .serializers import (
     UserRegistrationSerializer, UserAgeSerializer, UserGenderSerializer, 
@@ -11,9 +14,18 @@ from .serializers import (
 )
 from .models import CustomUser
 
+# 세션 데이터 반환하는 엔드포인터 추가
+class GetSessionDataView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        session_data = request.session.get('registration_data', {})
+        return Response({"session_data": session_data})
+
+
 # 이 단계별로 회원가입
 
-# 1단계) 회원 정보, 약관  >> 여기 코드 추가해야함
+# 1단계) 회원 정보, 약관
 class UserRegistrationStep1View(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
     permission_classes = [AllowAny]     # 모든 사용자가 접근
@@ -28,6 +40,9 @@ class UserRegistrationStep1View(generics.CreateAPIView):
         }
         self.request.session.save()     # 세션 데이터를 저장
 
+        # 테스트 로그 추가
+        print(f"User registration data saved in session: {self.request.session['registration_data']}")
+        print(f"Session ID: {self.request.session.session_key}")
 
 # 2단계) 나이
 class UserRegistrationStep2View(generics.UpdateAPIView):
@@ -35,20 +50,30 @@ class UserRegistrationStep2View(generics.UpdateAPIView):
     permission_classes = [AllowAny]
 
     def get_object(self):
-        # 세션에서 사용자 이름을 가져와 해당 사용자 객체를 반환
-        username = self.request.session.get('registration_data', {}).get('username')
+        session_data = self.request.session.get('registration_data', {})
         
-        # 세션에 사용자 이름이 없으면 PermissionDenied 예외를 발생
+        # 테스트 로그 추가
+        print(f"Session data in step 2: {session_data}")
+        print(f"Session ID: {self.request.session.session_key}")
+
+        username = session_data.get('username')
         if not username:
             raise PermissionDenied("No registration data found in session.")
         return CustomUser.objects.get(username=username)
 
-    # 사용자가 나이를 업데이트할 때 호출
     def perform_update(self, serializer):
-        # 세션에 저장된 데이터에 새로운 나이 데이터를 추가
-        self.request.session['registration_data'].update(serializer.validated_data)
-        self.request.session.save()     # 세션 데이터를 저장
-        serializer.save()   # 사용자 객체를 저장
+        session_data = self.request.session.get('registration_data', {})
+        session_data.update(serializer.validated_data)
+        self.request.session['registration_data'] = session_data
+        self.request.session.save()
+        # 테스트 로그 추가 
+        print(f"Updated session data in step 2: {self.request.session['registration_data']}")
+        serializer.save()
+
+    def patch(self, request, *args, **kwargs):
+        response = self.partial_update(request, *args, **kwargs)
+        session_data = self.request.session.get('registration_data', {})
+        return Response({"session_data": session_data, "response": response.data})
 
 # 3단계) 성별
 class UserRegistrationStep3View(generics.UpdateAPIView):

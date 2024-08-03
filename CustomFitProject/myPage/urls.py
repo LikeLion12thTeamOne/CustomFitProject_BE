@@ -5,6 +5,7 @@ from .views import (
 )
 from .views import UserAgeUpdateView, UserDiseaseUpdateView, UserHeightUpdateView, UserWeightUpdateView
 from .views import NoticeListView, NoticeDetailView
+from .views import UserProfileView #myPage 회원정보 가져오기
 
 urlpatterns = [
     # 추천상품 목록 보기
@@ -22,4 +23,6 @@ urlpatterns = [
 
     path('notices/', NoticeListView.as_view(), name='notice-list'), #전체 공지조회
     path('notices/<int:pk>/', NoticeDetailView.as_view(), name='notice-detail'), #개별 공지확인
+
+    path('profile/', UserProfileView.as_view(), name='user-profile'), #myPage 회원정보 가져오기 
 ]

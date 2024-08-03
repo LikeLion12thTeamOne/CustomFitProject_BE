@@ -160,7 +160,7 @@ class CompareProductsView(APIView):
 
         response_data = {
             'recommended_product': serializer.data,
-            'gnb_summary': gnb_summary
+            'gnb_summary': gnb_summary, 
         }
 
         return Response(response_data, status=status.HTTP_200_OK)

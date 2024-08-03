@@ -33,10 +33,10 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.sessions',  # 세션 앱
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    
     'rest_framework',
 
     # 추가한 패키지
@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'accounts',
     'customFit',
     'myPage',
-    
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -63,8 +62,9 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # CORS 설정 추가
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',  # 세션 미들웨어
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -73,23 +73,23 @@ MIDDLEWARE = [
 
     # 추가
     'allauth.account.middleware.AccountMiddleware', 
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # 추가 
 REST_FRAMEWORK = { 
-	'DEFAULT_AUTHENTICATION_CLASSES': [
-    'rest_framework.authentication.TokenAuthentication', 
-    'rest_framework.authentication.SessionAuthentication', #여기꼭추가
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication', 
+        'rest_framework.authentication.SessionAuthentication',
     ],
 }
 
 # CORS 설정
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React 앱이 실행되는 도메인 추가
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
-# 특정 HTTP 메소드만 허용 (필요에 따라 추가/수정)
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -99,7 +99,6 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 
-# 특정 헤더만 허용 (필요에 따라 추가/수정)
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
@@ -110,6 +109,24 @@ CORS_ALLOW_HEADERS = [
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
+]
+
+# CSRF 설정
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+
+# 세션 엔진 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_SECURE = False  # 로컬 개발 환경에서는 False, 배포 시 True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
+SESSION_SAVE_EVERY_REQUEST = False
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # 브라우저 닫을 때 세션 만료되지 않도록 설정
+SESSION_COOKIE_SAMESITE = 'None'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 ROOT_URLCONF = 'CustomFitProject.urls'

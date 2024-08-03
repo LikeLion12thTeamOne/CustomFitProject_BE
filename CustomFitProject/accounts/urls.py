@@ -1,10 +1,13 @@
 from django.urls import path, include
+from .views import GetSessionDataView
 from .views import (
     UserRegistrationStep1View, UserRegistrationStep2View, UserRegistrationStep3View, 
     UserRegistrationStep4View, UserRegistrationStep5View, UserRegistrationStep6View
 )
 
 urlpatterns = [
+    path('register/session/', GetSessionDataView.as_view(), name='get-session-data'),  # 추가된 부분
+
     path('register/step1/', UserRegistrationStep1View.as_view(), name='register-step1'),
     path('register/step2/', UserRegistrationStep2View.as_view(), name='register-step2'),
     path('register/step3/', UserRegistrationStep3View.as_view(), name='register-step3'),
